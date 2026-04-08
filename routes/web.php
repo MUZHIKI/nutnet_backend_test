@@ -16,6 +16,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/logs', [AlbumController::class, 'logs'])->name('albums.logs');
     Route::get('/albums/create', [AlbumController::class, 'create'])->name('albums.create');
     Route::post('/albums', [AlbumController::class, 'store'])->name('albums.store');
     Route::get('/albums/{album}/edit', [AlbumController::class, 'edit'])->name('albums.edit');

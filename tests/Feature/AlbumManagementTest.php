@@ -100,4 +100,30 @@ class AlbumManagementTest extends TestCase
         $this->assertArrayHasKey('description', $log->changes);
         $this->assertSame('Обновлённое описание.', $log->changes['description']['after']);
     }
+
+    public function test_authorized_user_can_open_global_logs_and_see_deleted_album_entry(): void
+    {
+        $user = User::factory()->create();
+        $album = Album::factory()->create([
+            'title' => 'Abbey Road',
+            'artist' => 'The Beatles',
+        ]);
+
+        $this->actingAs($user)->delete(route('albums.destroy', $album));
+
+        $response = $this->actingAs($user)->get(route('albums.logs'));
+
+        $response->assertOk();
+        $response->assertSee('Abbey Road');
+        $response->assertSee('The Beatles');
+        $this->assertDatabaseHas('album_logs', [
+            'action' => 'deleted',
+            'user_id' => $user->id,
+        ]);
+
+        $log = AlbumLog::query()->where('action', 'deleted')->latest()->first();
+
+        $this->assertSame('Abbey Road', $log?->changes['title'] ?? null);
+        $this->assertSame('The Beatles', $log?->changes['artist'] ?? null);
+    }
 }

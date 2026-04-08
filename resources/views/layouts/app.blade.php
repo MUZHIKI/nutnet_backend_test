@@ -478,6 +478,7 @@
                 <div class="actions">
                     @auth
                         <span class="badge">Авторизован: {{ auth()->user()->name }}</span>
+                        <a class="btn btn-secondary" href="{{ route('albums.logs') }}">Журнал изменений</a>
                         <a class="btn btn-primary" href="{{ route('albums.create') }}">Добавить альбом</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -521,3 +522,4 @@
     @stack('scripts')
 </body>
 </html>
+

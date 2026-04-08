@@ -55,6 +55,17 @@ class AlbumController extends Controller
         ]);
     }
 
+    public function logs(): View
+    {
+        $logs = AlbumLog::query()
+            ->with(['album', 'user'])
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('albums.logs', compact('logs'));
+    }
+
     public function store(AlbumStoreRequest $request): RedirectResponse
     {
         $album = Album::create($request->validated());
