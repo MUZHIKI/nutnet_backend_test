@@ -11,7 +11,7 @@
     <section class="panel">
         <div style="display: flex; justify-content: space-between; gap: 16px; align-items: start; flex-wrap: wrap; margin-bottom: 24px;">
             <div>
-                <h2 style="margin: 0 0 8px;">{{ $title }}</h2>
+                <h2 style="margin: 0 0 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.04em;">{{ $title }}</h2>
                 <p class="muted" style="margin: 0;">Поля можно заполнить вручную или подтянуть из Last.fm по названию альбома.</p>
             </div>
 
@@ -37,7 +37,7 @@
                         name="title"
                         id="title"
                         value="{{ old('title', $album->title) }}"
-                        placeholder="Например, Rumours"
+                        placeholder="Например, Группа крови"
                         required
                     >
                 </label>
@@ -46,6 +46,7 @@
                     <button class="btn btn-primary" type="button" id="lookup-button">Заполнить из Last.fm</button>
                 </div>
             </div>
+            <div id="lookup-message" class="error" style="display: none; margin-top: -6px;"></div>
             @error('title')
                 <div class="error">{{ $message }}</div>
             @enderror
@@ -71,7 +72,7 @@
                 alt="Предпросмотр обложки"
                 id="cover-preview"
                 class="album-cover-preview"
-                style="max-width: 320px; border-radius: 18px; {{ old('cover_url', $album->cover_url) ? '' : 'display:none;' }}"
+                style="max-width: 320px; border-radius: 22px; border: 1px solid rgba(255, 255, 255, 0.08); {{ old('cover_url', $album->cover_url) ? '' : 'display:none;' }}"
             >
 
             <label>
@@ -97,7 +98,7 @@
 
         @if ($isEdit)
             <div class="logs">
-                <h3 style="margin-bottom: 0;">История изменений</h3>
+                <h3 style="margin-bottom: 0; font-size: 22px;">История изменений</h3>
 
                 @forelse ($album->logs as $log)
                     <article class="log-item">
@@ -128,6 +129,7 @@
         const descriptionInput = document.getElementById('description');
         const coverInput = document.getElementById('cover_url');
         const coverPreview = document.getElementById('cover-preview');
+        const lookupMessage = document.getElementById('lookup-message');
 
         function syncPreview(url) {
             if (url) {
@@ -136,6 +138,16 @@
             } else {
                 coverPreview.style.display = 'none';
             }
+        }
+
+        function showLookupMessage(message) {
+            lookupMessage.textContent = message;
+            lookupMessage.style.display = 'block';
+        }
+
+        function clearLookupMessage() {
+            lookupMessage.textContent = '';
+            lookupMessage.style.display = 'none';
         }
 
         coverInput.addEventListener('input', (event) => {
@@ -150,6 +162,7 @@
                 return;
             }
 
+            clearLookupMessage();
             lookupButton.disabled = true;
             lookupButton.textContent = 'Ищем...';
 
@@ -173,7 +186,7 @@
                 titleInput.value = payload.data.title || titleInput.value;
                 syncPreview(coverInput.value);
             } catch (error) {
-                alert(error.message);
+                showLookupMessage(error.message);
             } finally {
                 lookupButton.disabled = false;
                 lookupButton.textContent = 'Заполнить из Last.fm';

@@ -26,6 +26,26 @@ class AlbumManagementTest extends TestCase
         $response->assertSee('Linkin Park');
     }
 
+    public function test_guest_can_search_album_by_russian_artist_name(): void
+    {
+        Album::factory()->create([
+            'title' => 'Группа крови',
+            'artist' => 'Кино',
+        ]);
+
+        Album::factory()->create([
+            'title' => 'Nevermind',
+            'artist' => 'Nirvana',
+        ]);
+
+        $response = $this->get('/?search='.urlencode('Кино'));
+
+        $response->assertOk();
+        $response->assertSee('Группа крови');
+        $response->assertSee('Кино');
+        $response->assertDontSee('Nevermind');
+    }
+
     public function test_guest_cannot_open_album_create_form(): void
     {
         $response = $this->get(route('albums.create'));

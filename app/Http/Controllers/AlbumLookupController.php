@@ -20,8 +20,12 @@ class AlbumLookupController extends Controller
                 'data' => $service->searchByTitle($validated['title']),
             ]);
         } catch (RuntimeException $exception) {
+            $message = $exception->getMessage() === 'Не удалось подключиться к Last.fm.'
+                ? 'Не удалось подключиться к Last.fm. Скорее всего, сервис недоступен из текущей сети.'
+                : $exception->getMessage();
+
             return response()->json([
-                'message' => $exception->getMessage(),
+                'message' => $message,
             ], 422);
         }
     }

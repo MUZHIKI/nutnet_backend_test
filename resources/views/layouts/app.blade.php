@@ -4,125 +4,252 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Справочник альбомов')</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f4f1ea;
-            --surface: rgba(255, 255, 255, 0.92);
-            --surface-strong: #ffffff;
-            --text: #1f2933;
-            --muted: #52606d;
-            --accent: #b45309;
-            --accent-dark: #7c2d12;
-            --border: rgba(31, 41, 51, 0.12);
-            --danger: #b91c1c;
-            --shadow: 0 20px 50px rgba(31, 41, 51, 0.12);
+            --bg: #0b1320;
+            --bg-soft: #101a2b;
+            --surface: rgba(12, 22, 36, 0.84);
+            --surface-strong: rgba(17, 29, 46, 0.96);
+            --surface-soft: rgba(255, 255, 255, 0.04);
+            --text: #f4f7fb;
+            --muted: #a8b2c3;
+            --accent: #ff8a3d;
+            --accent-soft: rgba(255, 138, 61, 0.12);
+            --border: rgba(255, 255, 255, 0.08);
+            --danger: #ff8b8b;
+            --success: #9ae6b4;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at top left, rgba(180, 83, 9, 0.18), transparent 32%),
-                radial-gradient(circle at bottom right, rgba(124, 45, 18, 0.12), transparent 28%),
-                linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%);
-            min-height: 100vh;
+
+        html {
+            color-scheme: dark;
         }
 
-        a { color: inherit; text-decoration: none; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text);
+            font-family: "Manrope", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(255, 138, 61, 0.18), transparent 26%),
+                linear-gradient(180deg, #0b1320 0%, #0e1726 100%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
 
         .container {
-            width: min(1120px, calc(100% - 32px));
+            width: min(1140px, calc(100% - 32px));
             margin: 0 auto;
         }
 
         .topbar {
-            padding: 20px 0;
+            padding: 22px 0 0;
         }
 
         .topbar__inner {
             display: flex;
-            gap: 16px;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
             flex-wrap: wrap;
             padding: 18px 22px;
-            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 22px;
+            border-radius: 24px;
+            background: rgba(8, 16, 27, 0.74);
             box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(16px);
+        }
+
+        .brand {
+            display: grid;
+            gap: 7px;
+        }
+
+        .brand small {
+            color: #ffd1aa;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
         }
 
         .brand h1 {
             margin: 0;
-            font-size: clamp(28px, 4vw, 42px);
-            letter-spacing: 0.02em;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(30px, 4vw, 44px);
+            line-height: 0.96;
+            letter-spacing: -0.04em;
         }
 
         .brand p {
-            margin: 6px 0 0;
+            margin: 0;
             color: var(--muted);
+            font-size: 15px;
+            max-width: 640px;
         }
 
-        .actions, .inline-actions {
+        .actions,
+        .inline-actions {
             display: flex;
-            gap: 12px;
             align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .main {
-            padding-bottom: 40px;
+            padding: 28px 0 40px;
+        }
+
+        .hero,
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.8fr);
+            gap: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .hero h2 {
+            margin: 0 0 12px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: clamp(32px, 4vw, 52px);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 16px;
+            max-width: 700px;
+        }
+
+        .hero-meta {
+            display: grid;
+            gap: 12px;
+        }
+
+        .hero-meta__item {
+            padding: 18px;
+            border-radius: 22px;
+            background: var(--surface-soft);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .hero-meta__item strong {
+            display: block;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .hero-meta__item span {
+            display: block;
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 14px;
         }
 
         .panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            box-shadow: var(--shadow);
             padding: 24px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
         .album-card {
-            display: grid;
-            gap: 14px;
-            background: var(--surface-strong);
-            border-radius: 22px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            display: grid;
             min-height: 100%;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--surface-strong);
+            transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
         }
 
-        .album-card img,
+        .album-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 138, 61, 0.22);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.25);
+        }
+
+        .album-cover {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a2b41 0%, #121f31 100%);
+        }
+
+        .album-cover img,
         .album-cover-preview {
             width: 100%;
-            aspect-ratio: 1 / 1;
+            height: 100%;
             object-fit: cover;
-            background: linear-gradient(135deg, #e5d3b3, #f7efe1);
+            display: block;
+        }
+
+        .album-cover__fallback {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            padding: 22px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.46) 100%);
+        }
+
+        .album-cover__fallback span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 62px;
+            height: 62px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .album-card__body {
-            padding: 0 18px 18px;
             display: grid;
-            gap: 8px;
+            gap: 10px;
+            padding: 18px;
         }
 
         .album-card h2 {
             margin: 0;
-            font-size: 24px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 26px;
+            line-height: 1;
+            letter-spacing: -0.04em;
         }
 
         .album-meta {
-            color: var(--accent-dark);
-            font-weight: 700;
+            color: #ffd1aa;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
         }
 
         .muted {
@@ -136,9 +263,10 @@
             cursor: pointer;
             border-radius: 999px;
             padding: 12px 18px;
-            font-size: 15px;
-            font-weight: 700;
-            transition: transform 0.16s ease, opacity 0.16s ease;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease;
         }
 
         .btn:hover,
@@ -147,20 +275,41 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #d97706);
-            color: #fff;
+            color: #111827;
+            background: linear-gradient(135deg, var(--accent), #ffba7d);
+            box-shadow: 0 12px 28px rgba(255, 138, 61, 0.22);
         }
 
         .btn-secondary {
-            background: #fff;
             color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
         }
 
         .btn-danger {
-            background: rgba(185, 28, 28, 0.12);
-            color: var(--danger);
-            border: 1px solid rgba(185, 28, 28, 0.2);
+            color: #ffd0d0;
+            background: rgba(255, 139, 139, 0.08);
+            border: 1px solid rgba(255, 139, 139, 0.16);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            color: #ffe3cb;
+            background: var(--accent-soft);
+            border: 1px solid rgba(255, 138, 61, 0.12);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .form-grid {
@@ -175,18 +324,27 @@
         label {
             display: grid;
             gap: 8px;
+            font-size: 14px;
             font-weight: 700;
+            color: #eaf0f8;
         }
 
         input,
         textarea {
             width: 100%;
             padding: 14px 16px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            font: inherit;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
             color: var(--text);
-            background: #fffdf9;
+            font: inherit;
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: rgba(255, 138, 61, 0.32);
+            box-shadow: 0 0 0 4px rgba(255, 138, 61, 0.08);
         }
 
         textarea {
@@ -194,25 +352,28 @@
             resize: vertical;
         }
 
-        .error {
-            color: var(--danger);
-            font-size: 14px;
-            margin-top: -4px;
-        }
-
         .status {
             margin-bottom: 18px;
             padding: 14px 18px;
-            border-radius: 16px;
-            background: rgba(180, 83, 9, 0.12);
-            color: var(--accent-dark);
+            border-radius: 18px;
+            color: #e6fff0;
+            background: rgba(154, 230, 180, 0.08);
+            border: 1px solid rgba(154, 230, 180, 0.14);
         }
 
-        .search-form {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 12px;
-            margin-bottom: 24px;
+        .error {
+            margin-top: -4px;
+            color: #ffc5c5;
+            font-size: 14px;
+        }
+
+        .empty {
+            padding: 36px;
+            text-align: center;
+            color: var(--muted);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .logs {
@@ -223,51 +384,78 @@
 
         .log-item {
             padding: 16px;
-            border: 1px solid var(--border);
             border-radius: 18px;
-            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
         }
 
-        .badge {
-            display: inline-flex;
+        .auth-card {
+            max-width: 520px;
+            margin: 52px auto 0;
+        }
+
+        .pager {
+            margin-top: 28px;
+            display: flex;
+            justify-content: center;
             align-items: center;
             gap: 8px;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(124, 45, 18, 0.08);
-            color: var(--accent-dark);
+            flex-wrap: wrap;
+        }
+
+        .pager__link,
+        .pager__current,
+        .pager__dots {
+            min-width: 42px;
+            height: 42px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 14px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
             font-size: 14px;
             font-weight: 700;
         }
 
-        .empty {
-            padding: 32px;
-            text-align: center;
+        .pager__link:hover {
+            border-color: rgba(255, 138, 61, 0.24);
+            background: rgba(255, 138, 61, 0.08);
+        }
+
+        .pager__current {
+            background: linear-gradient(135deg, var(--accent), #ffba7d);
+            color: #111827;
+            border-color: transparent;
+        }
+
+        .pager__dots {
+            background: transparent;
+            border-style: dashed;
             color: var(--muted);
-            border: 1px dashed var(--border);
-            border-radius: 20px;
         }
 
-        .auth-card {
-            max-width: 480px;
-            margin: 60px auto;
-        }
-
-        .pagination {
-            margin-top: 24px;
-        }
-
-        .pagination nav > div:first-child {
-            display: none;
-        }
-
-        .pagination svg {
-            width: 16px;
+        @media (max-width: 860px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 640px) {
+            .container {
+                width: min(100% - 20px, 1140px);
+            }
+
             .search-form {
                 grid-template-columns: 1fr;
+            }
+
+            .topbar__inner,
+            .hero,
+            .panel {
+                padding: 18px;
             }
         }
     </style>
@@ -279,9 +467,9 @@
             <div class="topbar__inner">
                 <div class="brand">
                     <a href="{{ route('albums.index') }}">
-                        <h1>Vinyl Archive</h1>
+                        <h1>Архив пластинок</h1>
                     </a>
-                    <p>Справочник музыкальных альбомов для тестового задания Nutnet.</p>
+                    <p>Каталог музыкальных альбомов.</p>
                 </div>
 
                 <div class="actions">
@@ -310,6 +498,23 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-cover-image]').forEach((image) => {
+                image.addEventListener('error', () => {
+                    image.style.display = 'none';
+                    const fallback = image.closest('[data-cover-root]')?.querySelector('[data-cover-fallback]');
+                    if (fallback) {
+                        fallback.hidden = false;
+                    }
+                });
+
+                if (image.complete && image.naturalWidth === 0) {
+                    image.dispatchEvent(new Event('error'));
+                }
+            });
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

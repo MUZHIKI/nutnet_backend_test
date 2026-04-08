@@ -7,6 +7,7 @@ use App\Http\Requests\AlbumUpdateRequest;
 use App\Models\Album;
 use App\Models\AlbumLog;
 use Illuminate\Contracts\View\View;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,17 +17,32 @@ class AlbumController extends Controller
     public function index(Request $request): View
     {
         $search = trim((string) $request->query('search', ''));
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = 10;
 
-        $albums = Album::query()
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->where('title', 'like', "%{$search}%")
-                        ->orWhere('artist', 'like', "%{$search}%");
-                });
-            })
+        $albumsCollection = Album::query()
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
+
+        if ($search !== '') {
+            $needle = mb_strtolower($search);
+
+            $albumsCollection = $albumsCollection->filter(function (Album $album) use ($needle) {
+                return str_contains(mb_strtolower($album->title), $needle)
+                    || str_contains(mb_strtolower($album->artist), $needle);
+            })->values();
+        }
+
+        $albums = new LengthAwarePaginator(
+            $albumsCollection->forPage($page, $perPage)->values(),
+            $albumsCollection->count(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
 
         return view('albums.index', compact('albums', 'search'));
     }

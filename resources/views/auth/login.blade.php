@@ -4,8 +4,8 @@
 
 @section('content')
     <section class="panel auth-card">
-        <h2 style="margin-top: 0;">Вход в систему</h2>
-        <p class="muted">Редактирование и создание альбомов доступно только авторизованному пользователю.</p>
+        <h2 style="margin-top: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.04em;">Вход в систему</h2>
+        <p class="muted">Создание, редактирование и удаление альбомов доступны только авторизованному пользователю.</p>
 
         <form method="POST" action="{{ route('login.store') }}" class="form-grid">
             @csrf
@@ -26,7 +26,7 @@
                 <div class="error">{{ $message }}</div>
             @enderror
 
-            <label style="display: flex; align-items: center; gap: 10px; font-weight: 400;">
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 500;">
                 <input style="width: auto;" type="checkbox" name="remember" value="1">
                 Запомнить меня
             </label>
@@ -35,7 +35,7 @@
         </form>
 
         <div class="status" style="margin-top: 20px;">
-            Тестовый пользователь после `db:seed`: `admin@example.com` / `password`
+            Тестовый пользователь: `admin@example.com` / `password`
         </div>
     </section>
 @endsection

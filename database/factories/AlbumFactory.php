@@ -11,11 +11,13 @@ class AlbumFactory extends Factory
 
     public function definition(): array
     {
+        $title = fake()->sentence(3);
+
         return [
-            'title' => fake()->sentence(3),
+            'title' => $title,
             'artist' => fake()->name(),
             'description' => fake()->paragraph(),
-            'cover_url' => fake()->imageUrl(400, 400, 'music', true),
+            'cover_url' => 'https://picsum.photos/seed/'.urlencode($title).'/800/800',
         ];
     }
 }
