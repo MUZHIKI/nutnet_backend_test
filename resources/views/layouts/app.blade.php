@@ -172,14 +172,17 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 320px));
             gap: 20px;
+            justify-content: start;
+            align-items: start;
         }
 
         .album-card {
             overflow: hidden;
             display: grid;
             min-height: 100%;
+            width: 100%;
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             background: var(--surface-strong);

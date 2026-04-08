@@ -12,7 +12,7 @@
         <div style="display: flex; justify-content: space-between; gap: 16px; align-items: start; flex-wrap: wrap; margin-bottom: 24px;">
             <div>
                 <h2 style="margin: 0 0 8px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.04em;">{{ $title }}</h2>
-                <p class="muted" style="margin: 0;">Поля можно заполнить вручную или подтянуть из Last.fm по названию альбома.</p>
+                <p class="muted" style="margin: 0;">Поля можно заполнить вручную или подтянуть из Last.fm по названию альбома и исполнителю.</p>
             </div>
 
             <a class="btn btn-secondary" href="{{ route('albums.index') }}">К списку</a>
@@ -46,6 +46,9 @@
                     <button class="btn btn-primary" type="button" id="lookup-button">Заполнить из Last.fm</button>
                 </div>
             </div>
+            <p class="muted" style="margin: -8px 0 0; font-size: 14px;">
+                Для автозаполнения можно указать только альбом, только исполнителя или оба поля сразу.
+            </p>
             <div id="lookup-message" class="error" style="display: none; margin-top: -6px;"></div>
             @error('title')
                 <div class="error">{{ $message }}</div>
@@ -156,9 +159,10 @@
 
         lookupButton?.addEventListener('click', async () => {
             const title = titleInput.value.trim();
+            const artist = artistInput.value.trim();
 
-            if (!title) {
-                alert('Сначала введите название альбома.');
+            if (!title && !artist) {
+                showLookupMessage('Укажите название альбома, исполнителя или оба поля для поиска.');
                 return;
             }
 
@@ -167,7 +171,17 @@
             lookupButton.textContent = 'Ищем...';
 
             try {
-                const response = await fetch(`/api/albums/lookup?title=${encodeURIComponent(title)}`, {
+                const params = new URLSearchParams();
+
+                if (title) {
+                    params.set('title', title);
+                }
+
+                if (artist) {
+                    params.set('artist', artist);
+                }
+
+                const response = await fetch(`/api/albums/lookup?${params.toString()}`, {
                     headers: {
                         'Accept': 'application/json',
                     },
