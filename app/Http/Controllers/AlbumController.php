@@ -18,7 +18,7 @@ class AlbumController extends Controller
     {
         $search = trim((string) $request->query('search', ''));
         $page = max(1, (int) $request->query('page', 1));
-        $perPage = 10;
+        $perPage = 9;
 
         $albumsCollection = Album::query()
             ->latest()
