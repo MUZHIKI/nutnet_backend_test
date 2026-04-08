@@ -153,6 +153,13 @@
             lookupMessage.style.display = 'none';
         }
 
+        function resetLookupFields() {
+            artistInput.value = '';
+            descriptionInput.value = '';
+            coverInput.value = '';
+            syncPreview('');
+        }
+
         coverInput.addEventListener('input', (event) => {
             syncPreview(event.target.value);
         });
@@ -169,6 +176,7 @@
             clearLookupMessage();
             lookupButton.disabled = true;
             lookupButton.textContent = 'Ищем...';
+            resetLookupFields();
 
             try {
                 const params = new URLSearchParams();
@@ -194,10 +202,10 @@
                     throw new Error(payload.message || 'Не удалось получить данные.');
                 }
 
-                artistInput.value = payload.data.artist || artistInput.value;
-                descriptionInput.value = payload.data.description || descriptionInput.value;
-                coverInput.value = payload.data.cover_url || coverInput.value;
-                titleInput.value = payload.data.title || titleInput.value;
+                titleInput.value = payload.data.title || title;
+                artistInput.value = payload.data.artist || '';
+                descriptionInput.value = payload.data.description || '';
+                coverInput.value = payload.data.cover_url || '';
                 syncPreview(coverInput.value);
             } catch (error) {
                 showLookupMessage(error.message);
@@ -208,3 +216,4 @@
         });
     </script>
 @endpush
+

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Album;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -123,4 +124,40 @@ class AlbumLookupTest extends TestCase
         $response->assertJsonPath('data.artist', 'Кино');
         $response->assertJsonPath('data.cover_url', 'https://example.com/kino.jpg');
     }
+
+    public function test_authorized_user_gets_readable_message_when_album_not_found(): void
+    {
+        config()->set('services.lastfm.key', 'test-key');
+
+        Http::fake([
+            '*' => Http::response([
+                'results' => [
+                    'albummatches' => [
+                        'album' => [],
+                    ],
+                ],
+            ]),
+        ]);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('api.albums.lookup', ['title' => 'Unknown Album']));
+
+        $response->assertStatus(422);
+        $response->assertJsonPath('message', 'Такой альбом не найден в Last.fm.');
+    }
+
+    public function test_album_list_contains_button_for_full_description(): void
+    {
+        Album::factory()->create([
+            'title' => 'Test Album',
+            'artist' => 'Test Artist',
+            'description' => str_repeat('Подробное описание. ', 20),
+        ]);
+
+        $response = $this->get(route('albums.index'));
+
+        $response->assertOk();
+        $response->assertSee('Полное описание');
+    }
 }
+

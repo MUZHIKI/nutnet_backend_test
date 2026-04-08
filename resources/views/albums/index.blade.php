@@ -37,6 +37,7 @@
                 @foreach ($albums as $album)
                     @php
                         $fallbackLetters = \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($album->title, 0, 2));
+                        $descriptionPreview = \Illuminate\Support\Str::limit($album->description, 175);
                     @endphp
                     <article class="album-card">
                         <div class="album-cover" data-cover-root>
@@ -58,7 +59,20 @@
                         <div class="album-card__body">
                             <div class="album-meta">{{ $album->artist }}</div>
                             <h2>{{ $album->title }}</h2>
-                            <div class="muted">{{ \Illuminate\Support\Str::limit($album->description, 175) }}</div>
+                            <div class="muted">{{ $descriptionPreview }}</div>
+
+                            @if (filled($album->description) && \Illuminate\Support\Str::length($album->description) > 175)
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary album-description-button"
+                                    data-description-button
+                                    data-title="{{ $album->title }}"
+                                    data-artist="{{ $album->artist }}"
+                                    data-description="{{ e($album->description) }}"
+                                >
+                                    Полное описание
+                                </button>
+                            @endif
 
                             @auth
                                 <div class="inline-actions">
@@ -86,9 +100,9 @@
 
                 <nav class="pager" aria-label="Пагинация">
                     @if ($albums->onFirstPage())
-                        <span class="pager__dots">←</span>
+                        <span class="pager__dots"><</span>
                     @else
-                        <a class="pager__link" href="{{ $albums->previousPageUrl() }}">←</a>
+                        <a class="pager__link" href="{{ $albums->previousPageUrl() }}"><</a>
                     @endif
 
                     @if ($start > 1)
@@ -114,9 +128,9 @@
                     @endif
 
                     @if ($albums->hasMorePages())
-                        <a class="pager__link" href="{{ $albums->nextPageUrl() }}">→</a>
+                        <a class="pager__link" href="{{ $albums->nextPageUrl() }}">></a>
                     @else
-                        <span class="pager__dots">→</span>
+                        <span class="pager__dots">></span>
                     @endif
                 </nav>
             @endif
@@ -126,4 +140,82 @@
             </div>
         @endif
     </section>
+
+    <dialog class="album-description-dialog" id="album-description-dialog">
+        <div class="album-description-dialog__header">
+            <div>
+                <div class="album-meta" id="album-description-dialog-artist"></div>
+                <h3 id="album-description-dialog-title" style="margin: 6px 0 0; font-family: 'Space Grotesk', sans-serif; font-size: 28px; letter-spacing: -0.04em;"></h3>
+            </div>
+            <button type="button" class="btn btn-secondary" data-description-close>Закрыть</button>
+        </div>
+        <div class="muted" id="album-description-dialog-text" style="line-height: 1.7;"></div>
+    </dialog>
 @endsection
+
+@push('head')
+    <style>
+        .album-description-button {
+            width: fit-content;
+            padding: 10px 14px;
+        }
+
+        .album-description-dialog {
+            width: min(640px, calc(100% - 24px));
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            background: rgba(12, 22, 36, 0.98);
+            color: #f4f7fb;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+        }
+
+        .album-description-dialog::backdrop {
+            background: rgba(3, 8, 15, 0.72);
+            backdrop-filter: blur(6px);
+        }
+
+        .album-description-dialog__header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: start;
+            margin-bottom: 18px;
+        }
+    </style>
+@endpush
+
+@push('scripts')
+    <script>
+        const descriptionDialog = document.getElementById('album-description-dialog');
+        const descriptionDialogTitle = document.getElementById('album-description-dialog-title');
+        const descriptionDialogArtist = document.getElementById('album-description-dialog-artist');
+        const descriptionDialogText = document.getElementById('album-description-dialog-text');
+
+        document.querySelectorAll('[data-description-button]').forEach((button) => {
+            button.addEventListener('click', () => {
+                descriptionDialogTitle.textContent = button.dataset.title || '';
+                descriptionDialogArtist.textContent = button.dataset.artist || '';
+                descriptionDialogText.textContent = button.dataset.description || '';
+                descriptionDialog.showModal();
+            });
+        });
+
+        descriptionDialog?.addEventListener('click', (event) => {
+            const rect = descriptionDialog.getBoundingClientRect();
+            const isOutside = event.clientX < rect.left
+                || event.clientX > rect.right
+                || event.clientY < rect.top
+                || event.clientY > rect.bottom;
+
+            if (isOutside) {
+                descriptionDialog.close();
+            }
+        });
+
+        document.querySelector('[data-description-close]')?.addEventListener('click', () => {
+            descriptionDialog?.close();
+        });
+    </script>
+@endpush
+

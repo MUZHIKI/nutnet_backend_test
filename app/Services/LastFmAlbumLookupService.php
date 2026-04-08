@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -50,12 +51,14 @@ class LastFmAlbumLookupService
                 ->json();
         } catch (ConnectionException $exception) {
             throw new RuntimeException('Не удалось подключиться к Last.fm.', previous: $exception);
+        } catch (RequestException $exception) {
+            throw new RuntimeException('Такой альбом не найден в Last.fm.', previous: $exception);
         }
 
         $match = Arr::first(Arr::wrap(data_get($response, 'results.albummatches.album')));
 
         if (! $match) {
-            throw new RuntimeException('Альбом не найден в Last.fm.');
+            throw new RuntimeException('Такой альбом не найден в Last.fm.');
         }
 
         return $this->buildAlbumPayload(
@@ -82,12 +85,14 @@ class LastFmAlbumLookupService
                 ->json();
         } catch (ConnectionException $exception) {
             throw new RuntimeException('Не удалось подключиться к Last.fm.', previous: $exception);
+        } catch (RequestException $exception) {
+            throw new RuntimeException('Такой исполнитель не найден в Last.fm.', previous: $exception);
         }
 
         $match = Arr::first(Arr::wrap(data_get($response, 'topalbums.album')));
 
         if (! $match) {
-            throw new RuntimeException('Исполнитель не найден в Last.fm.');
+            throw new RuntimeException('Такой исполнитель не найден в Last.fm.');
         }
 
         return $this->buildAlbumPayload(
@@ -103,23 +108,37 @@ class LastFmAlbumLookupService
         try {
             return $this->buildAlbumPayload($title, $artist, $apiKey);
         } catch (RuntimeException $exception) {
+            if (! str_contains(mb_strtolower($exception->getMessage()), 'не найден')) {
+                throw $exception;
+            }
+
             return $this->searchByTitle($title, $apiKey);
         }
     }
 
     protected function buildAlbumPayload(string $title, string $artist, string $apiKey, array $fallbackImages = []): array
     {
-        $details = Http::timeout(10)
-            ->retry(2, 300)
-            ->get(config('services.lastfm.base_url'), [
-                'method' => 'album.getinfo',
-                'artist' => $artist,
-                'album' => $title,
-                'api_key' => $apiKey,
-                'format' => 'json',
-            ])
-            ->throw()
-            ->json();
+        try {
+            $details = Http::timeout(10)
+                ->retry(2, 300)
+                ->get(config('services.lastfm.base_url'), [
+                    'method' => 'album.getinfo',
+                    'artist' => $artist,
+                    'album' => $title,
+                    'api_key' => $apiKey,
+                    'format' => 'json',
+                ])
+                ->throw()
+                ->json();
+        } catch (ConnectionException $exception) {
+            throw new RuntimeException('Не удалось подключиться к Last.fm.', previous: $exception);
+        } catch (RequestException $exception) {
+            throw new RuntimeException('Такой альбом или исполнитель не найден в Last.fm.', previous: $exception);
+        }
+
+        if (! data_get($details, 'album')) {
+            throw new RuntimeException('Такой альбом или исполнитель не найден в Last.fm.');
+        }
 
         return [
             'title' => (string) data_get($details, 'album.name', $title),
@@ -140,3 +159,4 @@ class LastFmAlbumLookupService
         return data_get($candidate, '#text');
     }
 }
+

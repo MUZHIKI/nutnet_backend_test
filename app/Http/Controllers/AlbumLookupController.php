@@ -34,3 +34,4 @@ class AlbumLookupController extends Controller
         }
     }
 }
+
