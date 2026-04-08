@@ -18,7 +18,7 @@
 
 - PHP 8.2+
 - Laravel 10
-- SQLite
+- PostgreSQL
 
 ## Быстрый старт
 
@@ -35,10 +35,15 @@ copy .env.example .env
 php artisan key:generate
 ```
 
-3. Создать файл базы, если его ещё нет:
+3. Настроить подключение к PostgreSQL в `.env`:
 
-```bash
-type nul > database/database.sqlite
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=nutnet
+DB_USERNAME=postgres
+DB_PASSWORD=secret
 ```
 
 4. Указать ключ Last.fm в `.env`:
@@ -72,6 +77,42 @@ php artisan serve
 - `/albums/{id}/edit` — редактирование альбома
 - `/api/albums/lookup?title=...` — поиск данных по альбому в Last.fm
 
+## Railway
+
+Минимальные переменные окружения для Railway:
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-app.up.railway.app
+APP_KEY=base64:...
+
+DB_CONNECTION=pgsql
+DB_HOST=...
+DB_PORT=5432
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
+DB_SCHEMA=public
+DB_SSLMODE=prefer
+
+LOG_CHANNEL=stderr
+LOG_STDERR_FORMATTER=\Monolog\Formatter\JsonFormatter
+
+SESSION_DRIVER=file
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+FILESYSTEM_DISK=public
+
+LASTFM_API_KEY=your_key_here
+```
+
+После первого деплоя на Railway нужно выполнить:
+
+```bash
+php artisan migrate --force --seed
+```
+
 ## Что ещё можно улучшить
 
 - загрузка собственных обложек в файловое хранилище;
@@ -85,4 +126,4 @@ php artisan serve
 
 ## Важно по текущей среде
 
-В этой рабочей папке проект собран вручную, потому что на машине в момент разработки не были доступны `php` и `composer` в `PATH`, поэтому локально я не смог выполнить `composer install`, миграции и тесты. Структура и код подготовлены под стандартный запуск Laravel после установки PHP-окружения.
+Для локального тестирования при желании можно временно вернуть `sqlite` в личном `.env`, но для продакшен-деплоя проект подготовлен под PostgreSQL.
